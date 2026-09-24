@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Plus, X } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import Field from '../components/Field'
 import { createQuiz } from '../lib/api'
 
 type QuestionInput = {
@@ -46,60 +48,59 @@ function CreateQuizPage() {
 
   return (
     <div>
-      <Link to="/" className="text-sm font-medium text-indigo-600">
-        ← Back to quizzes
+      <Link
+        to="/"
+        className="text-xs font-bold uppercase tracking-wider text-ink-muted hover:text-accent"
+      >
+        Quizzes <span className="ml-0.5">&gt;</span>
       </Link>
-      <h1 className="mt-2 text-2xl font-semibold text-slate-900">Create Quiz</h1>
+      <p className="mt-3 text-2xl font-extrabold tracking-tight text-ink">Create Quiz</p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-slate-700">
-            Title
-          </label>
-          <input
+      <form onSubmit={handleSubmit} className="mt-8">
+        <div className="rounded-xl border-3 border-ink p-6 shadow-md">
+          <Field
             id="title"
-            type="text"
+            label="Quiz title"
+            large
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="mt-6 space-y-5">
           {questions.map((question, index) => (
-            <div key={index} className="rounded-lg border border-slate-200 p-4">
+            <div key={index} className="rounded-xl border-3 border-ink p-6 shadow-md">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-700">
-                  Question {index + 1}
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink text-sm font-bold text-white">
+                  {index + 1}
                 </span>
                 {questions.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeQuestion(index)}
-                    className="text-sm text-red-600"
+                    className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-danger"
                   >
+                    <X className="h-3.5 w-3.5" />
                     Remove
                   </button>
                 )}
               </div>
 
-              <input
-                type="text"
-                required
-                placeholder="Question text"
-                value={question.text}
-                onChange={(e) => updateQuestion(index, 'text', e.target.value)}
-                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2"
-              />
-              <input
-                type="text"
-                required
-                placeholder="Correct answer"
-                value={question.correctAnswer}
-                onChange={(e) => updateQuestion(index, 'correctAnswer', e.target.value)}
-                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2"
-              />
+              <div className="mt-4 space-y-4">
+                <Field
+                  label="Question text"
+                  required
+                  value={question.text}
+                  onChange={(e) => updateQuestion(index, 'text', e.target.value)}
+                />
+                <Field
+                  label="Correct answer"
+                  required
+                  value={question.correctAnswer}
+                  onChange={(e) => updateQuestion(index, 'correctAnswer', e.target.value)}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -107,22 +108,25 @@ function CreateQuizPage() {
         <button
           type="button"
           onClick={addQuestion}
-          className="text-sm font-medium text-indigo-600"
+          className="mt-6 inline-flex items-center gap-2  border-3 border-ink px-5 py-2 text-sm font-semibold text-ink hover:bg-ink/3"
         >
-          + Add question
+          <Plus className="h-4 w-4" />
+          Add question
         </button>
 
         {mutation.isError && (
-          <p className="text-sm text-red-600">{mutation.error.message}</p>
+          <p className="mt-6 text-sm text-danger">{mutation.error.message}</p>
         )}
 
-        <button
-          type="submit"
-          disabled={mutation.isPending}
-          className="rounded-lg bg-indigo-600 ml-4  px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {mutation.isPending ? 'Creating...' : 'Create Quiz'}
-        </button>
+        <div className="mt-8">
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="bg-accent px-6 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-50"
+          >
+            {mutation.isPending ? 'Creating…' : 'Create Quiz'}
+          </button>
+        </div>
       </form>
     </div>
   )

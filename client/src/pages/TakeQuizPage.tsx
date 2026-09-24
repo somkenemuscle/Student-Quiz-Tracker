@@ -9,6 +9,7 @@ function TakeQuizPage() {
   const quizId = Number(id)
 
   const [answers, setAnswers] = useState<Record<number, string>>({})
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   const { data: quiz, isLoading, error } = useQuery({
     queryKey: ['quiz', quizId],
@@ -30,63 +31,107 @@ function TakeQuizPage() {
   })
 
   if (!Number.isInteger(quizId)) {
-    return <p>Invalid quiz.</p>
+    return <p className="text-danger">Invalid quiz.</p>
   }
 
   if (isLoading) {
-    return <p>Loading quiz...</p>
+    return <p className="text-ink-muted">Loading quiz…</p>
   }
 
   if (error) {
-    return <p>{error.message}</p>
+    return <p className="text-danger">{error.message}</p>
   }
 
   if (!quiz) {
-    return <p>Quiz not found.</p>
+    return <p className="text-ink-muted">Quiz not found.</p>
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  const total = quiz.questions.length
+  const question = quiz.questions[currentIndex]
+  const isLast = currentIndex === total - 1
+  const progress = ((currentIndex + 1) / total) * 100
+
+  function handleContinue(e: React.FormEvent) {
     e.preventDefault()
-    mutation.mutate()
+    if (isLast) {
+      mutation.mutate()
+    } else {
+      setCurrentIndex((i) => i + 1)
+    }
   }
 
   return (
     <div>
-      <Link to="/" className="text-sm font-medium text-indigo-600">
-        ← Back to quizzes
+      <Link
+        to="/"
+        className="text-xs font-bold uppercase tracking-wider text-ink-muted hover:text-accent"
+      >
+        Quizzes <span className="ml-0.5">&gt;</span>
       </Link>
-      <h1 className="mt-2 text-2xl font-semibold text-slate-900">{quiz.title}</h1>
+      <p className="mt-3 text-2xl font-extrabold tracking-tight text-ink">{quiz.title}</p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        {quiz.questions.map((question, index) => (
-          <div key={question.id} className="rounded-lg border border-slate-200 p-4">
-            <label htmlFor={`question-${question.id}`} className="block text-sm font-medium text-slate-700">
-              {index + 1}. {question.text}
-            </label>
-            <input
-              id={`question-${question.id}`}
-              type="text"
-              required
-              value={answers[question.id] ?? ''}
-              onChange={(e) =>
-                setAnswers((prev) => ({ ...prev, [question.id]: e.target.value }))
-              }
-              className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2"
-            />
-          </div>
-        ))}
+      <div className="mt-8">
+        <p className="text-xs font-bold uppercase tracking-wider text-ink-muted">
+          Question {currentIndex + 1} of {total}
+        </p>
+        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-border">
+          <div
+            className="h-full rounded-full bg-accent transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      <form onSubmit={handleContinue}>
+        <div className="mt-8 rounded-xl border-3 border-ink p-6 shadow-md">
+          <p className="text-2xl font-bold text-ink">{question.text}</p>
+
+          <label htmlFor="answer" className="sr-only">
+            Your answer
+          </label>
+          <input
+            id="answer"
+            type="text"
+            required
+            autoFocus
+            value={answers[question.id] ?? ''}
+            onChange={(e) =>
+              setAnswers((prev) => ({ ...prev, [question.id]: e.target.value }))
+            }
+            placeholder="Type your answer…"
+            className="mt-6 w-full border-b border-border bg-transparent py-2 text-lg text-ink focus:border-ink focus:outline-none"
+          />
+        </div>
 
         {mutation.isError && (
-          <p className="text-sm text-red-600">{mutation.error.message}</p>
+          <p className="mt-6 text-sm text-danger">{mutation.error.message}</p>
         )}
 
-        <button
-          type="submit"
-          disabled={mutation.isPending}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {mutation.isPending ? 'Submitting...' : 'Submit'}
-        </button>
+        <div className="mt-8 flex items-center justify-between">
+          {currentIndex > 0 ? (
+            <button
+              type="button"
+              onClick={() => setCurrentIndex((i) => i - 1)}
+              className="text-xs font-bold uppercase tracking-wider text-ink-muted hover:text-accent"
+            >
+              ← Back
+            </button>
+          ) : (
+            <span />
+          )}
+
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-50"
+          >
+            {isLast
+              ? mutation.isPending
+                ? 'Submitting…'
+                : 'Submit Quiz'
+              : 'Next'}
+          </button>
+        </div>
       </form>
     </div>
   )
