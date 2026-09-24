@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Quiz {
+  id        Int        @id @default(autoincrement())
+  title     String
+  createdAt DateTime   @default(now())
+  questions Question[]
+  attempts  Attempt[]
+}
+
+model Question {
+  id            Int    @id @default(autoincrement())
+  text          String
+  correctAnswer String
+  quizId        Int
+  quiz          Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model Attempt {
+  id       Int      @id @default(autoincrement())
+  score    Int
+  total    Int
+  takenAt  DateTime @default(now())
+  quizId   Int
+  quiz     Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
