@@ -3,6 +3,7 @@
 A full stack EdTech app for creating quizzes, taking them, and tracking scores, built as a technical assessment.
 
 **Live app:** https://quiz-tracker-app.vercel.app
+
 **API:** https://student-quiz-tracker.onrender.com/api/health
 
 > Note: the backend is hosted on Render's free tier, which spins down after inactivity. The first request after idling can take 30–60s to wake up — this is expected, not a bug.
