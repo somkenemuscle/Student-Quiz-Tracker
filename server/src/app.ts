@@ -5,9 +5,9 @@ import { router } from './routes'
 
 export const app = express()
 
-const allowedOrigins = process.env.CORS_ORIGIN?.split(',')
+const allowedOrigins = process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:5173']
 
-app.use(cors({ origin: allowedOrigins ?? true }))
+app.use(cors({ origin: allowedOrigins }))
 app.use(express.json())
 app.use(morgan('dev'))
 app.use('/api', router)
