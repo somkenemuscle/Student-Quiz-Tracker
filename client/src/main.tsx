@@ -4,11 +4,11 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
-import CreateQuizPage from './pages/CreateQuizPage.tsx'
+import CreateQuizPage from './pages/CreateQuizPage/CreateQuizPage.tsx'
 import NotFoundPage from './pages/NotFoundPage.tsx'
-import QuizListPage from './pages/QuizListPage.tsx'
-import ResultsPage from './pages/ResultsPage.tsx'
-import TakeQuizPage from './pages/TakeQuizPage.tsx'
+import QuizListPage from './pages/QuizListPage/QuizListPage.tsx'
+import ResultsPage from './pages/ResultsPage/ResultsPage.tsx'
+import TakeQuizPage from './pages/TakeQuizPage/TakeQuizPage.tsx'
 
 const queryClient = new QueryClient()
 

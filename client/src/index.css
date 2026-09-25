@@ -3,14 +3,15 @@
 @theme {
   --font-sans: "Public Sans", sans-serif;
   --font-serif: "Source Serif 4", serif;
+  --font-mono: "JetBrains Mono", monospace;
 
   --color-paper: #faf9f5;
   --color-ink: #1c1b18;
   --color-ink-muted: #726d5e;
   --color-border: #e4e1d8;
 
-  --color-accent: #4f46e5;
-  --color-accent-hover: #4338ca;
+  --color-accent: #0d9488;
+  --color-accent-hover: #0f766e;
 
   --color-success: #15803d;
   --color-danger: #b91c1c;
@@ -20,4 +21,20 @@ body {
   margin: 0;
   background-color: var(--color-paper);
   color: var(--color-ink);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fade-in 300ms ease-out;
+  animation-fill-mode: backwards;
 }
