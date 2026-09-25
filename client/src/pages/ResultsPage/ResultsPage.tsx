@@ -13,7 +13,7 @@ function ResultsPage() {
   const { data: attempt, isLoading, error } = useAttempt(id)
 
   if (!Number.isInteger(id)) {
-    return <p className="text-danger">Invalid result.</p>
+    return <ErrorMessage message="Invalid result." />
   }
 
   if (isLoading) {

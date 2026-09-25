@@ -19,7 +19,7 @@ function TakeQuizPage() {
   const mutation = useSubmitAttempt(quizId)
 
   if (!Number.isInteger(quizId)) {
-    return <p className="text-danger">Invalid quiz.</p>
+    return <ErrorMessage message="Invalid quiz." />
   }
 
   if (isLoading) {
