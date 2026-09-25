@@ -5,6 +5,19 @@ import { prisma } from '../lib/prisma'
 
 export const quizzesRouter = Router()
 
+quizzesRouter.get('/', async (_req, res) => {
+  const quizzes = await prisma.quiz.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      _count: {
+        select: { questions: true },
+      },
+    },
+  })
+
+  res.json(quizzes)
+})
+
 const createQuizSchema = z.object({
   title: z.string().trim().min(1, 'Title is required').max(200, 'Title is too long'),
   questions: z
@@ -49,32 +62,6 @@ quizzesRouter.post('/', async (req, res) => {
   res.status(201).json(quiz)
 })
 
-const submitAttemptSchema = z.object({
-  answers: z.array(
-    z.object({
-      questionId: z.number().int(),
-      answer: z.string().max(500, 'Answer is too long'),
-    }),
-  ),
-})
-
-function normalize(value: string) {
-  return value.trim().toLowerCase()
-}
-
-quizzesRouter.get('/', async (_req, res) => {
-  const quizzes = await prisma.quiz.findMany({
-    orderBy: { createdAt: 'desc' },
-    include: {
-      _count: {
-        select: { questions: true },
-      },
-    },
-  })
-
-  res.json(quizzes)
-})
-
 quizzesRouter.get('/:id', async (req, res) => {
   const id = parseIdParam(req.params.id)
 
@@ -103,6 +90,19 @@ quizzesRouter.get('/:id', async (req, res) => {
 
   res.json(quiz)
 })
+
+const submitAttemptSchema = z.object({
+  answers: z.array(
+    z.object({
+      questionId: z.number().int(),
+      answer: z.string().max(500, 'Answer is too long'),
+    }),
+  ),
+})
+
+function normalize(value: string) {
+  return value.trim().toLowerCase()
+}
 
 quizzesRouter.post('/:id/attempts', async (req, res) => {
   const id = parseIdParam(req.params.id)
